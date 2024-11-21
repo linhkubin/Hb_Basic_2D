@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -26,7 +27,7 @@ namespace Link.LineConnect
         [SerializeField] Tile tilePrefab;
         [SerializeField] Line linePrefab;
 
-        private Tile[,] tiles = new Tile[5, 8];
+        [SerializeField] private Tile[,] tiles = new Tile[5, 8];
         Vector3 point;
         Line lineSelecting;
         Tile tile;
@@ -49,13 +50,17 @@ namespace Link.LineConnect
             if (Input.GetMouseButtonDown(0))
             {
                 tile = GetTile(GetPoint());
-                lineSelecting = tile.Line;
+                if (tile != null)
+                {
+                    lineSelecting = tile.Line;
+                }
                 if (lineSelecting == null && tile.IsRoot)
                 {
                     lineSelecting = Instantiate(linePrefab);
                     tile.SetLine(lineSelecting);
-                    lineSelecting.AddIndex(tile.Index);
+                    lineSelecting.OnInit(tile.Color, tile.Index);
                 }
+                lineSelecting.SetSelectTile(tile);
             }
 
             if (Input.GetMouseButton(0))
@@ -63,7 +68,7 @@ namespace Link.LineConnect
                 if (lineSelecting != null)
                 {
                     Tile tile = GetTile(GetPoint());
-                    if (tile != null && this.tile != tile && tile.Line != lineSelecting)
+                    if (tile != null && this.tile != tile && tile.Line != lineSelecting && IsNearTile(this.tile, tile))
                     {
                         this.tile = tile;
                         tile.SetLine(lineSelecting);
@@ -121,6 +126,11 @@ namespace Link.LineConnect
             {
                 return null;
             }
+        }
+
+        private bool IsNearTile(Tile tile_1, Tile tile_2)
+        {
+            return (tile_1.Index.x == tile_2.Index.x && Mathf.Abs(tile_1.Index.y - tile_2.Index.y) == 1) || (tile_1.Index.y == tile_2.Index.y && Mathf.Abs(tile_1.Index.x - tile_2.Index.x) == 1);
         }
     }
 }

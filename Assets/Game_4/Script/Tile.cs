@@ -13,6 +13,8 @@ namespace Link.LineConnect
         public bool IsHaveLine => line;
         public Line Line => line;
 
+        public ColorType Color => color;
+
         private ColorType color;
         private Line line;
 
@@ -39,8 +41,8 @@ namespace Link.LineConnect
             this.line = line;
             if (this.line != null)
             {
-                line.AddIndex(Index);
-                SetColor(line.Color);
+                //line.AddIndex(Index);
+                //SetColor(line.Color);
             }
         }
 

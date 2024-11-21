@@ -10,6 +10,7 @@ namespace Link.LineConnect
         [SerializeField] ColorData colorData;
         [SerializeField] LineRenderer lineRenderer;
         List<Vector2Int> indexs = new List<Vector2Int>();
+        Tile selectTile = null;
 
         public ColorType Color { get; private set; }
 
@@ -20,14 +21,20 @@ namespace Link.LineConnect
             lineRenderer.endColor = colorData.GetColor(colorType);
 
             indexs.Clear();
-            indexs.Add(index);
-
+            AddIndex(index);
         }
 
         public void AddIndex(Vector2Int index)
         {
+            if (selectTile != null)
+            {
+                RemoveIndexBehind(selectTile.Index);
+                selectTile = null;
+            }
+
             indexs.Add(index);
             lineRenderer.positionCount = indexs.Count;
+            //lineRenderer.widthMultiplier = 0.4f;
             lineRenderer.SetPosition(indexs.Count - 1, LevelControl.Ins.GetTilePoint(index));
         }
 
@@ -59,9 +66,9 @@ namespace Link.LineConnect
 
             for (int i = indexs.Count - 1; i > id; i--)
             {
-                LevelControl.Ins.GetTile(index).ResetLine();
+                LevelControl.Ins.GetTile(indexs[i]).ResetLine();
+                indexs.RemoveAt(i);
             }
-
             lineRenderer.positionCount = indexs.Count;
         }
 
@@ -70,6 +77,11 @@ namespace Link.LineConnect
         private bool IsTileRoot(Vector2Int index)
         {
             return LevelControl.Ins.GetTile(index).IsRoot;
+        }
+
+        public void SetSelectTile(Tile tile)
+        {
+            this.selectTile = tile;
         }
     }
 }
