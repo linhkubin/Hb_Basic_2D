@@ -41,7 +41,10 @@ namespace Link.LineConnect
         {
             OnInitTile(5, 8);
             tiles[0, 0].OnInit(ColorType.Red, new Vector2Int(0, 0));
-            tiles[4, 7].OnInit(ColorType.Red, new Vector2Int(4, 7));
+            tiles[4, 7].OnInit(ColorType.Red, new Vector2Int(4, 7));     
+            
+            tiles[1, 0].OnInit(ColorType.Blue, new Vector2Int(1, 0));
+            tiles[4, 6].OnInit(ColorType.Blue, new Vector2Int(4, 6));
         }
 
 
@@ -53,6 +56,7 @@ namespace Link.LineConnect
                 if (tile != null)
                 {
                     lineSelecting = tile.Line;
+                    SelectTile(tile);
                 }
                 if (lineSelecting == null && tile.IsRoot)
                 {
@@ -60,7 +64,10 @@ namespace Link.LineConnect
                     tile.SetLine(lineSelecting);
                     lineSelecting.OnInit(tile.Color, tile.Index);
                 }
-                lineSelecting.SetSelectTile(tile);
+                if (lineSelecting != null)
+                {
+                    lineSelecting.SetSelectTile(tile);
+                }
             }
 
             if (Input.GetMouseButton(0))
@@ -68,18 +75,52 @@ namespace Link.LineConnect
                 if (lineSelecting != null)
                 {
                     Tile tile = GetTile(GetPoint());
-                    if (tile != null && this.tile != tile && tile.Line != lineSelecting && IsNearTile(this.tile, tile))
+                    if (tile != null && IsNearTile(this.tile, tile))
                     {
-                        this.tile = tile;
-                        tile.SetLine(lineSelecting);
-                        lineSelecting.AddIndex(tile.Index);
+                        //chia ra các truong hop
+
+                        if (tile.IsEmpty && this.tile != tile && tile.Line != lineSelecting)
+                        {
+                            //tile k mau
+                            SelectTile(tile);
+
+                            tile.SetLine(lineSelecting);
+                            lineSelecting.AddIndex(tile.Index);
+                        }
+                        else
+                        if (this.tile != tile && tile.Line == lineSelecting && lineSelecting.IsTileLast(this.tile, 1) && lineSelecting.IsTileLast(tile, 2))
+                        {
+                            //tile cung line
+                            lineSelecting.RemoveIndex(this.tile.Index);
+
+                            SelectTile(tile);
+
+                            tile.SetLine(lineSelecting);
+                            lineSelecting.AddIndex(tile.Index);
+                        }
+
+                        //tile khac line
+
                     }
                 }
             }
 
             if (Input.GetMouseButtonUp(0))
             {
+                SelectTile(null);
+            }
+        }
 
+        private void SelectTile(Tile tile)
+        {
+            if (this.tile != null)
+            {
+                this.tile.Select(false);
+            }
+            this.tile = tile;
+            if (this.tile != null)
+            {
+                this.tile.Select(true);
             }
         }
 

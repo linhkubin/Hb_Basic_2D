@@ -52,6 +52,7 @@ namespace Link.LineConnect
                 for (int i = indexs.Count - 1; i >= id; i--)
                 {
                     LevelControl.Ins.GetTile(index).ResetLine();
+                    indexs.RemoveAt(i);
                 }
 
                 lineRenderer.positionCount = indexs.Count;
@@ -82,6 +83,11 @@ namespace Link.LineConnect
         public void SetSelectTile(Tile tile)
         {
             this.selectTile = tile;
+        }
+
+        public bool IsTileLast(Tile tile, int lastIndex)
+        {
+            return indexs[^lastIndex] == tile.Index;
         }
     }
 }

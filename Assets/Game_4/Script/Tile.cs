@@ -8,12 +8,14 @@ namespace Link.LineConnect
     {
         [SerializeField] ColorData colorData;
         [SerializeField] SpriteRenderer headRenderer;
+        [SerializeField] GameObject highlight;
         public Vector2Int Index { get; private set; }
         public bool IsRoot => headRenderer.gameObject.activeSelf;
         public bool IsHaveLine => line;
         public Line Line => line;
 
         public ColorType Color => color;
+        public bool IsEmpty => line == null;
 
         private ColorType color;
         private Line line;
@@ -25,6 +27,7 @@ namespace Link.LineConnect
             SetColor(colorType);
             headRenderer.gameObject.SetActive(colorType != ColorType.None);
             headRenderer.color = colorData.GetColor(colorType);
+            Select(false);
         }
 
         public void SetColor(ColorType colorType)
@@ -49,6 +52,11 @@ namespace Link.LineConnect
         public void ResetLine()
         {
             this.line = null;
+        }
+
+        public void Select(bool select)
+        {
+            highlight.SetActive(select);
         }
 
     }
