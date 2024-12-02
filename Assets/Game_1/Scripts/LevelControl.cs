@@ -9,21 +9,21 @@ namespace Link.HouseStack
         House_1, House_2, House_3, House_4, House_5, House_6, House_7,
     }
 
-    public class Control : MonoBehaviour
+    public class LevelControl : MonoBehaviour
     {
-        private static Control instance;    
-        public static Control Instance
+        private static LevelControl instance;    
+        public static LevelControl Instance
         {
             get {
                 if (instance == null){
-                    instance = FindObjectOfType<Control>();
+                    instance = FindObjectOfType<LevelControl>();
                 }
                 return instance; 
             }
         }
 
-        public enum State { Building, Droping, Stoping }
-        private State state = State.Building;    
+        public enum State { Home, Building, Droping, Stoping }
+        private State state = State.Home;    
 
         [SerializeField] House housePrefab;
         [SerializeField] House houseLast;
@@ -33,10 +33,10 @@ namespace Link.HouseStack
         [SerializeField] float moveSpeed = 1;
         [SerializeField] float space = 3.5f;
 
-        private void Start()
-        {
-            StartBuilding();
-        }
+        //private void Start()
+        //{
+        //    StartBuilding();
+        //}
 
         private void Update()
         {
@@ -58,6 +58,11 @@ namespace Link.HouseStack
         }
 
         private int[] craneAngle = new[] { -30, -20, -10, 10, 20, 30 };
+
+        public void OnPlay()
+        {
+            StartBuilding();
+        }
 
         private void StartBuilding()
         {
@@ -89,6 +94,8 @@ namespace Link.HouseStack
             if (house == houseLast || house == housePreLast)
             {
                 Debug.Log("Lose");
+                state = State.Home;
+                UIManager.instance.ShowWin();
             }
         }
     }

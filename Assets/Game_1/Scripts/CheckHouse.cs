@@ -12,7 +12,7 @@ namespace Link.HouseStack
             House house = collision.GetComponent<House>();
             if (house != null)
             {
-                Control.Instance.CheckHouseBuilding(house);
+                LevelControl.Instance.CheckHouseBuilding(house);
             }
         }
     }
