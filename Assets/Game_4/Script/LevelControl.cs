@@ -30,7 +30,7 @@ namespace Link.LineConnect
         [SerializeField] private Tile[,] tiles = new Tile[5, 8];
         Vector3 point;
         Line lineSelecting;
-        Tile tile;
+        Tile tileSelect, tile_1, tile_2;
 
         private void Awake()
         {
@@ -52,21 +52,21 @@ namespace Link.LineConnect
         {
             if (Input.GetMouseButtonDown(0))
             {
-                tile = GetTile(GetPoint());
-                if (tile != null)
+                tileSelect = GetTile(GetPoint());
+                if (tileSelect != null)
                 {
-                    lineSelecting = tile.Line;
-                    SelectTile(tile);
+                    lineSelecting = tileSelect.Line;
+                    SelectTile(tileSelect);
                 }
-                if (lineSelecting == null && tile.IsRoot)
+                if (lineSelecting == null && tileSelect.IsRoot)
                 {
                     lineSelecting = Instantiate(linePrefab);
-                    tile.SetLine(lineSelecting);
-                    lineSelecting.OnInit(tile.Color, tile.Index);
+                    tileSelect.SetLine(lineSelecting);
+                    lineSelecting.OnInit(tileSelect.Color, tileSelect.Index);
                 }
                 if (lineSelecting != null)
                 {
-                    lineSelecting.SetSelectTile(tile);
+                    lineSelecting.SetSelectTile(tileSelect);
                 }
             }
 
@@ -74,32 +74,36 @@ namespace Link.LineConnect
             {
                 if (lineSelecting != null)
                 {
-                    Tile tile = GetTile(GetPoint());
-                    if (tile != null && IsNearTile(this.tile, tile))
+                    tile_2 = tile_1;
+                    tile_1 = GetTile(GetPoint());
+                    if (tile_1 != null && IsNearTile(this.tileSelect, tile_1))
                     {
-                        //chia ra các truong hop
-
-                        if (tile.IsEmpty && this.tile != tile && tile.Line != lineSelecting)
+                        //chia ra cac truong hop
+                        if (tile_2 != null && tile_2.IsRoot && lineSelecting.IsTileLast(this.tile_2, 1) && lineSelecting.IsTileLast(tile_1, 2))
                         {
-                            //tile k mau
-                            SelectTile(tile);
-
-                            tile.SetLine(lineSelecting);
-                            lineSelecting.AddIndex(tile.Index);
+                            //tile la root thi chi xoa di duoc 
+                            lineSelecting.RemoveIndex(this.tileSelect.Index);
+                            SelectTile(tile_1);
+                            Debug.Log(2);
                         }
                         else
-                        if (this.tile != tile && tile.Line == lineSelecting && lineSelecting.IsTileLast(this.tile, 1) && lineSelecting.IsTileLast(tile, 2))
+                        if (tile_1.IsEmpty && this.tileSelect != tile_1 && tile_1.Line != lineSelecting)
+                        {
+                            //tile k mau
+                            SelectTile(tile_1);
+
+                            tile_1.SetLine(lineSelecting);
+                            lineSelecting.AddIndex(tile_1.Index);
+                            Debug.Log(1);
+                        }
+                        else
+                        if (this.tileSelect != tile_1 && tile_1.Line == lineSelecting && lineSelecting.IsTileLast(this.tileSelect, 1) && lineSelecting.IsTileLast(tile_1, 2))
                         {
                             //tile cung line
-                            lineSelecting.RemoveIndex(this.tile.Index);
-
-                            SelectTile(tile);
-
-                            tile.SetLine(lineSelecting);
-                            lineSelecting.AddIndex(tile.Index);
+                            lineSelecting.RemoveIndex(this.tileSelect.Index);
+                            SelectTile(tile_1);
+                            Debug.Log(3);
                         }
-
-                        //tile khac line
 
                     }
                 }
@@ -113,14 +117,14 @@ namespace Link.LineConnect
 
         private void SelectTile(Tile tile)
         {
-            if (this.tile != null)
+            if (this.tileSelect != null)
             {
-                this.tile.Select(false);
+                this.tileSelect.Select(false);
             }
-            this.tile = tile;
-            if (this.tile != null)
+            this.tileSelect = tile;
+            if (this.tileSelect != null)
             {
-                this.tile.Select(true);
+                this.tileSelect.Select(true);
             }
         }
 

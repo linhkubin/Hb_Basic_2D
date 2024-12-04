@@ -48,7 +48,7 @@ namespace Link.LineConnect
             {
                 //xoa toan bo tile cu di
                 int id = indexs.IndexOf(index);
-
+                //Debug.Log(id);
                 for (int i = indexs.Count - 1; i >= id; i--)
                 {
                     LevelControl.Ins.GetTile(index).ResetLine();
@@ -58,8 +58,6 @@ namespace Link.LineConnect
                 lineRenderer.positionCount = indexs.Count;
             }
         }
-
-
         public void RemoveIndexBehind(Vector2Int index)
         {
             //xoa toan bo tile cu di
@@ -72,9 +70,6 @@ namespace Link.LineConnect
             }
             lineRenderer.positionCount = indexs.Count;
         }
-
-
-
         private bool IsTileRoot(Vector2Int index)
         {
             return LevelControl.Ins.GetTile(index).IsRoot;
@@ -84,10 +79,13 @@ namespace Link.LineConnect
         {
             this.selectTile = tile;
         }
-
         public bool IsTileLast(Tile tile, int lastIndex)
         {
             return indexs[^lastIndex] == tile.Index;
+        }
+        public Vector2Int IndexTileLast(int lastIndex)
+        {
+            return indexs[^lastIndex];
         }
     }
 }
