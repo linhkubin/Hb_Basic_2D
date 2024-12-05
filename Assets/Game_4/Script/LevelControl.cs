@@ -126,7 +126,7 @@ namespace Link.LineConnect
                             if (tileSelect.IsSameLine(tileNew))
                             {
                                 Debug.Log(2);
-                                if (tileNew.IsPreLast())
+                                if (tileNew.IsPreLast() && tileSelect.IsLast())
                                 {
                                     lineSelecting.RemoveIndex(this.tileSelect.Index);
                                     SelectTile(tileNew);
@@ -144,7 +144,7 @@ namespace Link.LineConnect
                             }
                         }
                         else
-                        if (tileNew.IsRoot && tileNew.IsSameColor(tileSelect))
+                        if (tileNew.IsRoot && tileSelect.IsSameColor(tileNew))
                         {
                             SelectTile(tileNew);
                             tileNew.SetLine(lineSelecting);

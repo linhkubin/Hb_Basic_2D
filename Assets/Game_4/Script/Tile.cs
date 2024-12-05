@@ -77,7 +77,7 @@ namespace Link.LineConnect
 
         internal bool IsSameColor(Tile tile)
         {
-            return line != null && tile.line != null && line.Color == tile.line.Color;
+            return line != null || tile.line != null || line.Color == tile.line.Color;
         }
     }
 }
