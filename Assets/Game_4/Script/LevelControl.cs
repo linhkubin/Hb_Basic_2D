@@ -30,7 +30,7 @@ namespace Link.LineConnect
         [SerializeField] private Tile[,] tiles = new Tile[5, 8];
         Vector3 point;
         Line lineSelecting;
-        Tile tileSelect, tile_1, tile_2;
+        Tile tileSelect, tileNew;
 
         private void Awake()
         {
@@ -45,6 +45,8 @@ namespace Link.LineConnect
             
             tiles[1, 0].OnInit(ColorType.Blue, new Vector2Int(1, 0));
             tiles[4, 6].OnInit(ColorType.Blue, new Vector2Int(4, 6));
+            tiles[1, 1].OnInit(ColorType.Blue, new Vector2Int(1, 1));
+            tiles[3, 6].OnInit(ColorType.Blue, new Vector2Int(3, 6));
         }
 
 
@@ -74,35 +76,79 @@ namespace Link.LineConnect
             {
                 if (lineSelecting != null)
                 {
-                    tile_2 = tile_1;
-                    tile_1 = GetTile(GetPoint());
-                    if (tile_1 != null && IsNearTile(this.tileSelect, tile_1))
+                    tileNew = GetTile(GetPoint());
+                    if (tileNew != null && tileSelect != tileNew && IsNearTile(this.tileSelect, tileNew))
                     {
                         //chia ra cac truong hop
-                        if (tile_2 != null && tile_2.IsRoot && lineSelecting.IsTileLast(this.tile_2, 1) && lineSelecting.IsTileLast(tile_1, 2))
-                        {
-                            //tile la root thi chi xoa di duoc 
-                            lineSelecting.RemoveIndex(this.tileSelect.Index);
-                            SelectTile(tile_1);
-                            Debug.Log(2);
-                        }
-                        else
-                        if (tile_1.IsEmpty && this.tileSelect != tile_1 && tile_1.Line != lineSelecting)
-                        {
-                            //tile k mau
-                            SelectTile(tile_1);
+                        //if (tile_2 != null && tile_2.IsRoot && lineSelecting.IsTileLast(this.tile_2, 1) && lineSelecting.IsTileLast(tile_1, 2))
+                        //{
+                        //    //tile la root thi chi xoa di duoc 
+                        //    lineSelecting.RemoveIndex(this.tileSelect.Index);
+                        //    SelectTile(tile_1);
+                        //    Debug.Log(2);
+                        //}
+                        //else
+                        //if (tile_1.IsEmpty && this.tileSelect != tile_1 && tile_1.Line != lineSelecting)
+                        //{
+                        //    //tile k mau
+                        //    SelectTile(tile_1);
 
-                            tile_1.SetLine(lineSelecting);
-                            lineSelecting.AddIndex(tile_1.Index);
-                            Debug.Log(1);
+                        //    tile_1.SetLine(lineSelecting);
+                        //    lineSelecting.AddIndex(tile_1.Index);
+                        //    Debug.Log(1);
+                        //}
+                        //else
+                        //if (this.tileSelect != tile_1 && tile_1.Line == lineSelecting && lineSelecting.IsTileLast(this.tileSelect, 1) && lineSelecting.IsTileLast(tile_1, 2))
+                        //{
+                        //    //tile cung line
+                        //    lineSelecting.RemoveIndex(this.tileSelect.Index);
+                        //    SelectTile(tile_1);
+                        //    Debug.Log(3);
+                        //}
+                        if (tileNew.IsEmpty)
+                        {
+                            if (tileSelect.IsRoot && tileSelect.IsLast())
+                            {
+                                
+                            }
+                            else
+                            {
+                                Debug.Log(3);
+                                //tile k mau
+                                SelectTile(tileNew);
+                                tileNew.SetLine(lineSelecting);
+                                lineSelecting.AddIndex(tileNew.Index);
+                            }
                         }
                         else
-                        if (this.tileSelect != tile_1 && tile_1.Line == lineSelecting && lineSelecting.IsTileLast(this.tileSelect, 1) && lineSelecting.IsTileLast(tile_1, 2))
+                        if (!tileNew.IsRoot)
                         {
-                            //tile cung line
-                            lineSelecting.RemoveIndex(this.tileSelect.Index);
-                            SelectTile(tile_1);
-                            Debug.Log(3);
+                            if (tileSelect.IsSameLine(tileNew))
+                            {
+                                Debug.Log(2);
+                                if (tileNew.IsPreLast())
+                                {
+                                    lineSelecting.RemoveIndex(this.tileSelect.Index);
+                                    SelectTile(tileNew);
+                                }
+                            }
+                            else
+                            if (tileSelect.IsSameColor(tileNew))
+                            {
+                                Debug.Log(1);
+                                tileNew.Line.RemoveIndexBehind(tileNew.Index);
+                                tileSelect.Line.RemoveIndexBehind(tileSelect.Index);
+                                MergeLine(tileSelect.Line, tileNew.Line);
+                                SelectTile(null);
+                                lineSelecting = null;
+                            }
+                        }
+                        else
+                        if (tileNew.IsRoot && tileNew.IsSameColor(tileSelect))
+                        {
+                            SelectTile(tileNew);
+                            tileNew.SetLine(lineSelecting);
+                            lineSelecting.AddIndex(tileNew.Index);
                         }
 
                     }
@@ -112,6 +158,14 @@ namespace Link.LineConnect
             if (Input.GetMouseButtonUp(0))
             {
                 SelectTile(null);
+            }
+        }
+
+        internal void UpdateTile(Line line, List<Vector2Int> indexs)
+        {
+            for (int i = 0; i < indexs.Count; i++)
+            {
+                tiles[indexs[i].x, indexs[i].y].UpdateLine(line);
             }
         }
 
@@ -126,6 +180,12 @@ namespace Link.LineConnect
             {
                 this.tileSelect.Select(true);
             }
+        }
+
+        private void MergeLine(Line line_1, Line line_2)
+        {
+            line_1.AddLine(line_2);
+            Destroy(line_2.gameObject);
         }
 
         public Vector3 GetPoint()

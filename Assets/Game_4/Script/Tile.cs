@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Link.LineConnect
         public Line Line => line;
 
         public ColorType Color => color;
-        public bool IsEmpty => line == null;
+        public bool IsEmpty => line == null && !IsRoot;
 
         private ColorType color;
         private Line line;
@@ -42,11 +43,11 @@ namespace Link.LineConnect
                 line.RemoveIndex(Index);
             }
             this.line = line;
-            if (this.line != null)
-            {
-                //line.AddIndex(Index);
-                //SetColor(line.Color);
-            }
+        }
+
+        public void UpdateLine(Line line)
+        {
+            this.line = line;
         }
 
         public void ResetLine()
@@ -59,5 +60,24 @@ namespace Link.LineConnect
             highlight.SetActive(select);
         }
 
+        internal bool IsSameLine(Tile tile)
+        {
+            return line != null && line == tile.line;
+        }
+
+        internal bool IsLast()
+        {
+            return line != null && line.IsTileLast(this, 1);
+        }
+
+        internal bool IsPreLast()
+        {
+            return line != null && line.IsTileLast(this, 2);
+        }
+
+        internal bool IsSameColor(Tile tile)
+        {
+            return line != null && tile.line != null && line.Color == tile.line.Color;
+        }
     }
 }

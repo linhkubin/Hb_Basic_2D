@@ -40,22 +40,25 @@ namespace Link.LineConnect
 
         public void RemoveIndex(Vector2Int index)
         {
-            if (IsTileRoot(indexs[^1]))
-            {
-                //split tile
-            }
-            else
+            //if (IsTileRoot(indexs[^1]))
+            //{
+            //    //split tile
+            //}
+            //else
             {
                 //xoa toan bo tile cu di
                 int id = indexs.IndexOf(index);
-                //Debug.Log(id);
-                for (int i = indexs.Count - 1; i >= id; i--)
+                if (id >= 0)
                 {
-                    LevelControl.Ins.GetTile(index).ResetLine();
-                    indexs.RemoveAt(i);
-                }
+                    //Debug.Log(id);
+                    for (int i = indexs.Count - 1; i >= id; i--)
+                    {
+                        LevelControl.Ins.GetTile(index).ResetLine();
+                        indexs.RemoveAt(i);
+                    }
 
-                lineRenderer.positionCount = indexs.Count;
+                    lineRenderer.positionCount = indexs.Count;
+                }
             }
         }
         public void RemoveIndexBehind(Vector2Int index)
@@ -70,10 +73,6 @@ namespace Link.LineConnect
             }
             lineRenderer.positionCount = indexs.Count;
         }
-        private bool IsTileRoot(Vector2Int index)
-        {
-            return LevelControl.Ins.GetTile(index).IsRoot;
-        }
 
         public void SetSelectTile(Tile tile)
         {
@@ -81,11 +80,33 @@ namespace Link.LineConnect
         }
         public bool IsTileLast(Tile tile, int lastIndex)
         {
-            return indexs[^lastIndex] == tile.Index;
+            return indexs.Count > 1 && indexs.Count >= lastIndex ? indexs[^lastIndex] == tile.Index : false;
         }
         public Vector2Int IndexTileLast(int lastIndex)
         {
             return indexs[^lastIndex];
+        }
+
+        internal void AddLine(Line line)
+        {
+            line.indexs.Reverse();
+            indexs.AddRange(line.indexs);
+            LevelControl.Ins.UpdateTile(this, indexs);
+            UpdateLineRender();
+        }
+
+        private void UpdateLineRender()
+        {
+            lineRenderer.positionCount = indexs.Count;
+            for (int i = 0; i < indexs.Count; i++)
+            {
+                lineRenderer.SetPosition(i, LevelControl.Ins.GetTilePoint(indexs[i]));
+            }
+        }
+
+        internal bool IsDone()
+        {
+            return LevelControl.Ins.GetTile(indexs[^1]).IsRoot;
         }
     }
 }
