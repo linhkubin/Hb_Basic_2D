@@ -1,85 +1,55 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Link.Card
+namespace Link.Paint
 {
     public class Control : MonoBehaviour
     {
-        public static Control Instance { get; private set; }
-        public CardSOData cardData;
-        [SerializeField] Card[] cards;
-        Card card_1;
-        Card card_2;
+        private const int MAX_X = 8, MAX_Y = 12;
 
-        bool isCanSelect = true;
+        [SerializeField] Tile tilePrefab;
+        [SerializeField] Transform parent;
+        [SerializeField] Vector2 space;
+        Tile[,] tiles = new Tile[MAX_X, MAX_Y];
 
-        private void Awake()
+        // Start is called before the first frame update
+        void Start()
         {
-            Instance = this;
-            OnInit();
-        }
+            Vector2 startPoint = -Vector2.right * space.x * (MAX_X - 1) * 0.5f - Vector2.up * space.y * (MAX_Y - 1) * 0.5f;
 
-        public void OnInit()
-        {
-            for (int i = 0; i < cards.Length; i++)
+            for (int i = 0; i < MAX_X; i++) 
             {
-                cards[i].OnInit((CardType)(i / 2));
-            }
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (isCanSelect && Input.GetMouseButtonDown(0))
-            {
-                if (card_1 == null)
+                for(int j = 0; j < MAX_Y; j++)
                 {
-                    card_1 = GetCard();
-                    card_1.Select();
-                }
-                else if(card_1 != null)
-                {
-                    card_2 = GetCard();
-                    if (card_1 != card_2)
-                    {
-                        isCanSelect = false;
-
-                        card_2.Select();
-                        if(card_1.CardType == card_2.CardType)
-                        {
-
-                        }
-                        else
-                        {
-                            card_1 = null;
-                            card_2 = null;
-                        }
-                    }
-                    else
-                    {
-                        card_2 = null;
-                    }
-
+                    Vector2 point = Vector2.right * space.x * i + Vector2.up * space.y * j + startPoint;
+                    tiles[i,j] = Instantiate(tilePrefab, point, Quaternion.identity, parent);
                 }
             }
+
+
         }
 
-        private Card GetCard()
+        private void Update()
         {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
-            if (hit.collider != null)
+            if (Input.GetKeyDown(KeyCode.UpArrow))
             {
-                return hit.collider.GetComponent<Card>();
+
             }
-            return null;
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+
+            }
         }
 
-        private IEnumerator IESelect(Card card_1, Card card_2)
-        {
-
-            yield return new WaitForSeconds(1f);
-        }
     }
 }
